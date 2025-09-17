@@ -1,4 +1,5 @@
 const express = require('express');
+const cors = require('cors');
 const axios = require('axios');
 const dotenv = require('dotenv');
 
@@ -8,6 +9,7 @@ const PORT = process.env.PORT || 3000;
 
 const TAOSTATS_API_BASE = 'https://api.taostats.io';
 
+app.use(cors());
 app.use(async (req, res) => {
 
 
@@ -15,7 +17,7 @@ app.use(async (req, res) => {
     const path = req.originalUrl;
     console.log(path)
     if (path.includes("rpc")) {
-      url = `${TAOSTATS_API_BASE}${path}?authorization=${TAOSTATS_API_KEY}`;
+      url = `${TAOSTATS_API_BASE}${path}?authorization=${process.env.TAOSTATS_API_KEY}`;
       console.log(`${TAOSTATS_API_BASE}${path}?authorization=apikey`)
     } else {
       url = `${TAOSTATS_API_BASE}${path}`;
