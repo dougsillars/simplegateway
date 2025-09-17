@@ -14,8 +14,14 @@ app.use(async (req, res) => {
   try {
     const path = req.originalUrl;
     console.log(path)
-    const url = `${TAOSTATS_API_BASE}${path}`;
-    console.log(url)
+    if (path.includes("rpc")) {
+      url = `${TAOSTATS_API_BASE}${path}?authorization=${TAOSTATS_API_KEY}`;
+      console.log(`${TAOSTATS_API_BASE}${path}?authorization=apikey`)
+    } else {
+      url = `${TAOSTATS_API_BASE}${path}`;
+      console.log(url)
+    }
+    
     const response = await axios.get(url, {
       headers: {
         'Authorization': process.env.TAOSTATS_API_KEY
