@@ -22,8 +22,13 @@ app.use(async (req, res) => {
     //can be RPC or can be HTTPS call
     if (path.includes("rpc")) {
       //websocket
-      wsUrl = `${TAOSTATS_API_BASE}${path}?authorization=${process.env.TAOSTATS_API_KEY}`;
-      console.log(`${TAOSTATS_API_BASE}${path}?authorization=apikey`)
+      if (path.includes("lite")){
+          wsUrl = `wss://api.taostats.io/api/v1/rpc/ws/finney_lite?authorization=${process.env.TAOSTATS_API_KEY}`;
+      }else{
+          wsUrl = `wss://api.taostats.io/api/v1/rpc/ws/finney_archive?authorization=${process.env.TAOSTATS_API_KEY}`;
+      }
+      
+      
       //WSS call
       const ws = new WebSocket(wsUrl);
 
