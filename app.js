@@ -40,6 +40,45 @@ app.get("/api/rpc/list", async (req, res) => {
     const api = await getApi(wsUrl);
 
     const result = {};
+
+    Object.keys(api.query).forEach((moduleName) => {
+      result[moduleName] = {};
+
+      Object.keys(api.query[moduleName]).forEach((methodName) => {
+        const storageEntry = api.query[moduleName][methodName];
+        const meta = storageEntry.meta;
+
+        // meta is a StorageEntryMetadata object with args & docs
+        result[moduleName][methodName] = {
+          type: meta.type.toString(), // Plain | Map | DoubleMap | NMap
+          args: meta.type.isMap
+            ? [meta.type.asMap.key.toString()]
+            : meta.type.isDoubleMap
+            ? [
+                meta.type.asDoubleMap.key1.toString(),
+                meta.type.asDoubleMap.key2.toString(),
+              ]
+            : meta.type.isNMap
+            ? meta.type.asNMap.keyVec.map((k) => k.toString())
+            : [],
+          docs: meta.docs.map((d) => d.toString()),
+        };
+      });
+    });
+
+    res.json(result);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: err.message });
+  }
+});
+/*
+app.get("/api/rpc/list", async (req, res) => {
+  try {
+    const wsUrl = chooseWsUrl(req.query.network);
+    const api = await getApi(wsUrl);
+
+    const result = {};
     Object.keys(api.query).forEach((moduleName) => {
       result[moduleName] = Object.keys(api.query[moduleName]);
     });
@@ -50,6 +89,8 @@ app.get("/api/rpc/list", async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 });
+*/
+
 
 // --------------------
 // 2️⃣ Query a storage function
